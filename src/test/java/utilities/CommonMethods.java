@@ -1,5 +1,15 @@
 package utilities;
 
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import stepDef.PageInitializer;
 
 import java.io.File;
@@ -7,9 +17,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class CommonMethods extends PageInitializer {
+public class CommonMethods extends PageInitializer{
     public static WebDriver driver;
     public static Actions actions;
 
@@ -32,33 +43,21 @@ public class CommonMethods extends PageInitializer {
         driver.manage().timeouts().implicitlyWait(Constants.IMPLICIT_WAIT, TimeUnit.SECONDS);
         initializePageObjects();
     }
-    /*public static void openBrowserAndLaunchApplication() {
-        ConfigReader.readProperties();
-        String[] browserType = ConfigReader.getPropertyValue("browserType");
-        or (int i = 0; i < browsers.length; i++) {
-        switch (browsers[i]) {
-            case "Chrome" -> drivers[i] = new ChromeDriver();
-            case "Firefox" -> drivers[i] = new FirefoxDriver();
-            case "IE" -> drivers[i] = new InternetExplorerDriver();
-            default -> drivers[i] = new EdgeDriver();
-        }
-        driver.manage().window().maximize();
-        driver.get(ConfigReader.getPropertyValue("url"));
-        driver.manage().timeouts().implicitlyWait(Constants.IMPLICIT_WAIT, TimeUnit.SECONDS);
-        initializePageObjects();
-    }*/
+
+
+
 
     public static void closeBrowser(){
         driver.quit();
     }
 
 
-    public static void waitForClickabilty(WebElement element){
+    public static void waitForClickability(WebElement element){
         getWait().until(ExpectedConditions.elementToBeClickable(element));
     }
 
     public static void doClick(WebElement element){
-        waitForClickabilty(element);
+        waitForClickability(element);
         element.click();
     }
 
@@ -68,8 +67,7 @@ public class CommonMethods extends PageInitializer {
     }
 
     public static Select clickDropDown(WebElement element){
-        Select select = new Select(element);
-        return select;
+        return new Select(element);
     }
 
     public static void selectByValue(WebElement element,String value) {
@@ -98,11 +96,8 @@ public class CommonMethods extends PageInitializer {
     }
 
     public static byte[] takeScreenshot(String imageName){
-        // this casts the webDriver interface 'driver' to take a screenshot Interface
         TakesScreenshot ts= (TakesScreenshot) driver;
-        //This captures the screenshot and stores it as byte array
         byte[] picBytes=ts.getScreenshotAs(OutputType.BYTES);
-        //This captures the screenshot and stores it as a file in the sourceFile variable
         File sourcePath=ts.getScreenshotAs(OutputType.FILE);
         try {
             FileUtils.copyFile(sourcePath, new File(Constants.SCREENSHOT_FILEPATH+imageName+getTimeStamp("yyyy-MM-dd-HH-mm-ss")+".png"));
@@ -122,6 +117,10 @@ public class CommonMethods extends PageInitializer {
         actions = new Actions(driver);
         actions.click().build().perform();
     }
+    public static void hoverOver(WebElement element){
+        actions = new Actions(driver);
+        actions.moveToElement(element).build().perform();
+    }
 
     public static void actionsScroll(WebElement element){
         actions.moveToElement(element).perform();
@@ -130,5 +129,6 @@ public class CommonMethods extends PageInitializer {
     public static void jsClick(WebElement element){
         javascriptExecutor().executeScript("arguments[0].click();", element);
     }
+
 
 }
